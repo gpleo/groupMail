@@ -6,8 +6,12 @@ var ejs = require('ejs');
 var nodemailer = require('nodemailer');
 var config = require(__dirname + '/data/config.js').config;
 
-var logFile = __dirname + '/logs/' + Date.create().format('{yyyy}-{MM}-{dd}_{hh}:{mm}:{ss}') + '.log.txt';
-var log = new Log('debug', fs.createWriteStream(logFile));
+var logFile = __dirname + '/logs/' + 'log.txt';
+// var logFile = __dirname + '/logs/' + Date.create().format('{yyyy}-{MM}-{dd}_{hh}:{mm}:{ss}') + '.log.txt';
+var log = new Log('debug', fs.createWriteStream(logFile, {
+  flag: 'a',
+  encoding: 'utf-8'
+}));
 
 var stream = fs.createReadStream(__dirname + '/data/email.csv');
 
@@ -50,7 +54,10 @@ var csvStream = csv()
         subject: config.subject,
         html: html,
         text: text,
-        attachments: attachments
+        attachments: attachments,
+        headers: {
+          'Disposition-Notification-To': '1'
+        }
       };
       transport.sendMail(mailOptions, function(err, info){
         if(err){
