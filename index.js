@@ -1,5 +1,6 @@
 var sugar = require('sugar');
 var fs = require('fs');
+var async = require('async');
 var csv = require('fast-csv');
 var Log = require('log');
 var ejs = require('ejs');
@@ -40,44 +41,54 @@ var successEmails = 0;
 var failureEmails = 0;
 var errorRecords = 0;
 
+var user_data = [];
+
+function sendEmail() {
+  async.eachSeries(user_data, function(user, cb) {
+    console.log('The email send for ' + JSON.stringify(user));
+
+    var html = ejs.render(htmlTemplate, {nickname: user.nickname});
+    var text = ejs.render(textTemplate, {nickname: user.nickname});
+
+    var mailOptions = {
+      from: config.senderName + '<' + config.auth.user + '>',
+      to: user.nickname + '<' + user.email + '>',
+      subject: config.subject,
+      html: html,
+      text: text,
+      attachments: attachments,
+      headers: {
+        'Disposition-Notification-To': '1'
+      }
+    };
+    transport.sendMail(mailOptions, function(err, info){
+      if(err){
+        log.error(user.nickname + '<' + user.email + '> send failure: ', err);
+        failureEmails++;
+      }else{
+        log.info(user.nickname + '<' + user.email + '> send success!');
+        successEmails++;
+        if(successEmails % 100 === 0){
+          console.log('Sending ' + successEmails + ' emails successful.');
+        }
+      }
+      cb();
+    });
+  }, function() {
+    console.log('============== Done ===============');
+    console.log(successEmails + ' email(s) send success!');
+    console.log(failureEmails + ' email(s) send failure!');
+    console.log(errorRecords + ' record(s) data error!');
+    console.log('Please check the log file for detail: ' + logFile);
+  });
+}
+
 var csvStream = csv()
   .on("data", function(data){
     if (data && data.length === 2) {
-      count++;
-
-      var html = ejs.render(htmlTemplate, {nickname: data[0]});
-      var text = ejs.render(textTemplate, {nickname: data[0]});
-
-      var mailOptions = {
-        from: config.senderName + '<' + config.auth.user + '>',
-        to: data[0] + '<' + data[1] + '>',
-        subject: config.subject,
-        html: html,
-        text: text,
-        attachments: attachments,
-        headers: {
-          'Disposition-Notification-To': '1'
-        }
-      };
-      transport.sendMail(mailOptions, function(err, info){
-        if(err){
-          log.error(data[0] + '<' + data[1] + '> send failure: ', err);
-          failureEmails++;
-        }else{
-          log.info(data[0] + '<' + data[1] + '> send success!');
-          successEmails++;
-          if(successEmails % 100 === 0){
-            console.log('Sending ' + successEmails + ' emails successful.');
-          }
-        }
-        count--;
-        if(count===0){
-          console.log('============== Done ===============');
-          console.log(successEmails + ' email(s) send success!');
-          console.log(failureEmails + ' email(s) send failure!');
-          console.log(errorRecords + ' record(s) data error!');
-          console.log('Please check the log file for detail: ' + logFile);
-        }
+      user_data.push({
+        nickname: data[0],
+        email: data[1]
       });
     } else {
       log.error('Error data: ', data);
@@ -85,5 +96,6 @@ var csvStream = csv()
     }
   })
   .on("end", function(data){
+    sendEmail();
   });
 stream.pipe(csvStream);

@@ -20,10 +20,11 @@
     "url": "https://github.com/gpleo/groupMailer/issues"
   },
   "dependencies": {
-    "nodemailer": "~1.3.0",
+    "async": "^1.2.1",
     "ejs": "~2.2.4",
     "fast-csv": "~0.5.5",
     "log": "~1.4.0",
+    "nodemailer": "~1.3.0",
     "sugar": "~1.4.1"
   }
 }
