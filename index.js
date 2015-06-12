@@ -58,7 +58,7 @@ function sendEmail() {
       text: text,
       attachments: attachments,
       headers: {
-        'Disposition-Notification-To': '1'
+        'Disposition-Notification-To': config.auth.user
       }
     };
     transport.sendMail(mailOptions, function(err, info){
