@@ -6,6 +6,9 @@ exports.config = {
     user: 'test@gopersist.com',
     pass: 'tes123'
   },
+  tls: {
+    rejectUnauthorized: false
+  },
   senderName: 'Test',
   subject: 'Test email'
 };
