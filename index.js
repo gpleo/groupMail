@@ -5,6 +5,7 @@ var csv = require('fast-csv');
 var Log = require('log');
 var ejs = require('ejs');
 var nodemailer = require('nodemailer');
+var sleep = require('sleep');
 var config = require(__dirname + '/data/config.js').config;
 
 var logFile = __dirname + '/logs/' + 'log.txt';
@@ -72,6 +73,7 @@ function sendEmail() {
           console.log('Sending ' + successEmails + ' emails successful.');
         }
       }
+      sleep.usleep(config.sleep*1000000);
       cb();
     });
   }, function() {
