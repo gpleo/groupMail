@@ -1,3 +1,0 @@
-[Thu Feb 19 2015 22:28:31 GMT+0800 (中国标准时间)] INFO Linlish<linlish@gmail.com> send success!
-[Thu Feb 19 2015 22:28:31 GMT+0800 (中国标准时间)] INFO Linlfx<linlfx@gmail.com> send success!
-[Thu Feb 19 2015 22:28:31 GMT+0800 (中国标准时间)] INFO 林<42316099@qq.com> send success!
