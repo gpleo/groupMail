@@ -71,6 +71,7 @@ function sendEmail() {
     } else {
       subjectCount[subject] = 1;
     }
+    subject = subject.replace('<%- nickname%>', user.nickname);
 
     console.log('The email send for ' + JSON.stringify(user) + ', ' + templateName + ', subject: ' + subject);
 
